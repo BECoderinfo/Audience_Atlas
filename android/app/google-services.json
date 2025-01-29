@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1075654579926",
+    "project_id": "audience-atlas-e7c07",
+    "storage_bucket": "audience-atlas-e7c07.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075654579926:android:5ca837359ad6fbc4701b77",
+        "android_client_info": {
+          "package_name": "com.audience.atlas.audience_atlas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075654579926-ocks5d0u3jsgl12k7qn9d478lcdgdhc3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.audience.atlas.audience_atlas",
+            "certificate_hash": "fd52d554dead40ecb48d4b04d43391bbade368f3"
+          }
+        },
+        {
+          "client_id": "1075654579926-a1lk2gn5gi9o6min3kqg1qdm5dklb8av.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ1lTPr9I7ZOCDOx7GA_AxWb5L_A3XPjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075654579926-a1lk2gn5gi9o6min3kqg1qdm5dklb8av.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
