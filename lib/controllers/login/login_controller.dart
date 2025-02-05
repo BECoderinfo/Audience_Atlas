@@ -1,7 +1,7 @@
-import 'dart:developer';
 import 'package:audience_atlas/utils/import.dart';
 
 class LoginController extends GetxController {
+  BuildContext ctx = Get.context!;
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -36,10 +36,35 @@ class LoginController extends GetxController {
       if (userCredential.user != null) {
         // Store login state
         AppVariables.box.write(StorageKeys.isLoggedIn, true);
-        AppVariables.box.write(StorageKeys.aId, userCredential.user!.uid);
         AppVariables.box.write(StorageKeys.aEmail, userCredential.user!.email);
 
-        Get.offAllNamed(Routes.navigation); // Navigate to home
+        var user = await findUser(userCredential: userCredential);
+        if (user == null) {
+          Get.showSnackbar(
+            GetSnackBar(
+              duration: Duration(seconds: 3),
+              message: 'unexpected error occurred. Please try again',
+            ),
+          );
+          return;
+        } else if (user == false) {
+          Get.showSnackbar(
+            GetSnackBar(
+              duration: Duration(seconds: 3),
+              message: 'User not found. Sign up to create an account',
+            ),
+          );
+          return;
+        } else {
+          AppVariables.box.write(StorageKeys.aId, user['user']['id']);
+          AppVariables.box.write(StorageKeys.aName, user['user']['name']);
+          AppVariables.box.write(StorageKeys.aImage, user['user']['image']);
+          AppVariables.box
+              .write(StorageKeys.subList, user['user']['subscriptions'] ?? []);
+
+          // Navigate to home
+          Get.offAllNamed(Routes.navigation);
+        }
       }
     } on FirebaseAuthException catch (e) {
       log("Login error: ${e.message}");
@@ -57,5 +82,22 @@ class LoginController extends GetxController {
     emailController.dispose();
     passwordController.dispose();
     super.onClose();
+  }
+
+  findUser({required UserCredential userCredential}) async {
+    var response = await ApiService.getApi(
+      Apis.getUserByEmail(email: userCredential.user!.email.toString()),
+      ctx,
+    );
+
+    log(response.toString());
+
+    if (response == null) {
+      return null;
+    } else if (response['massage'] == "User found") {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

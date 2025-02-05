@@ -1,6 +1,8 @@
 import 'package:audience_atlas/utils/import.dart';
 import 'package:audience_atlas/views/bio/bio.dart';
 
+import '../views/publishers/publisher_details.dart';
+
 class AppPages {
   AppPages._();
 
@@ -33,6 +35,14 @@ class AppPages {
     GetPage(
       name: Routes.navigation,
       page: () => const Navigation(),
+    ),
+    GetPage(
+      name: Routes.video,
+      page: () => const VideoPage(),
+    ),
+    GetPage(
+      name: Routes.publisherDetails,
+      page: () => const PublisherD(),
     ),
   ];
 }

@@ -4,6 +4,8 @@ import 'package:audience_atlas/utils/import.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupController extends GetxController {
+  BuildContext context = Get.context!;
+
   final formKey = GlobalKey<FormState>();
   final userNameController = TextEditingController();
   final emailController = TextEditingController();
@@ -53,7 +55,11 @@ class SignupController extends GetxController {
       );
 
       if (userCredential.user != null) {
-        Get.offAllNamed(Routes.login);
+        var res = await signupApi(userCredential: userCredential);
+
+        if (res != null) {
+          Get.offAllNamed(Routes.login);
+        }
       }
     } catch (error) {
       log("Sign-up error: $error");
@@ -73,5 +79,20 @@ class SignupController extends GetxController {
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();
+  }
+
+  signupApi({required UserCredential userCredential}) async {
+    log(userCredential.user!.displayName.toString());
+    var response = await ApiService.postApi(
+      Apis.createUser,
+      context,
+      body: {
+        'name': userCredential.user!.displayName,
+        'email': userCredential.user!.email,
+        'password': userCredential.user!.uid,
+      },
+    );
+
+    return response;
   }
 }

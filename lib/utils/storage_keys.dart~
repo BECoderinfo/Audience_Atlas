@@ -8,5 +8,4 @@ class StorageKeys {
   static const String aToken = 'token';
   static const String aPhone = 'phone';
   static const String isBiometric = 'biometric';
-  static const String subList = 'sub_list';
 }

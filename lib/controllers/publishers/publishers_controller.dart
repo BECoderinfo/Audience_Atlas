@@ -1,7 +1,11 @@
+import 'package:audience_atlas/modals/publisher_modal/publisher_modal.dart';
 import 'package:audience_atlas/utils/import.dart';
 
 class PublishersController extends GetxController {
+  BuildContext ctx = Get.context!;
   var isLoading = false.obs;
+
+  RxList<PublisherModal> publishers = <PublisherModal>[].obs;
 
   @override
   void onInit() {
@@ -12,18 +16,18 @@ class PublishersController extends GetxController {
   Future<void> fetchData() async {
     try {
       isLoading.value = true;
+
+      publishers.clear();
       // Call your API here
-      // Example: final response = await http.get('your-api-url');
+      var res = await ApiService.getApi(Apis.getPublishers, ctx);
 
-      // After fetching, update the data
-      // For example:
-      // dashboardItems = response.data['dashboardItems'];
-      // announcements = response.data['announcements'];
-      // recentActivities = response.data['recentActivities'];
-
-      Future.delayed(Duration(seconds: 2), () {
-        isLoading.value = false;
-      });
+      if (res != null) {
+        res.forEach(
+          (element) => publishers.add(
+            PublisherModal.fromJson(element),
+          ),
+        );
+      }
 
       // Simulate some progress
       // Example progress
@@ -31,6 +35,18 @@ class PublishersController extends GetxController {
     } catch (e) {
       // Handle error
       print('Error fetching data: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void subscribe() {
+    try {
+      // Call your API here
+      var res = ApiService.postApi(Apis.subscribeUnsubscribe, ctx, body: {});
+    } catch (e) {
+      // Handle error
+      log('Error subscribing: $e');
     }
   }
 }

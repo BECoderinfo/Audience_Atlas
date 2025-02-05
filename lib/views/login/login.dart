@@ -1,5 +1,6 @@
 import 'package:audience_atlas/controllers/login/login_controller.dart';
 import 'package:audience_atlas/utils/import.dart';
+import 'package:flutter/gestures.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -68,6 +69,29 @@ class Login extends StatelessWidget {
                   AppVariables.box.write(StorageKeys.isLoggedIn, true);
                 },
                 child: const Text('Login'),
+              ),
+              const Gap(20),
+              Center(
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Don\'t have an account? ',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: 'Sign Up',
+                        style: const TextStyle(
+                          color: AppColors.iconColor,
+                          fontSize: 16,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () => Get.back(),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

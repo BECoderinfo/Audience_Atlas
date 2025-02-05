@@ -7,7 +7,7 @@ class Intro extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int count = Get.arguments ?? 0;
-    IntroController controller = Get.put(IntroController());
+    IntroController controller = Get.put(IntroController(context: context));
     return Scaffold(
       body: Container(
         color: AppColors.whiteColor,

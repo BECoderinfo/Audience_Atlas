@@ -1,5 +1,6 @@
 import 'package:audience_atlas/controllers/signup/signup_controller.dart';
 import 'package:audience_atlas/utils/import.dart';
+import 'package:flutter/gestures.dart';
 
 class Signup extends StatelessWidget {
   const Signup({super.key});
@@ -110,6 +111,28 @@ class Signup extends StatelessWidget {
                                     color: Colors.white)
                                 : const Text('Sign Up'),
                           )),
+                      const Gap(20),
+                      RichText(
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: 'Already have an account? ',
+                            style: TextStyle(
+                              color: AppColors.blackColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'Login',
+                            style: TextStyle(
+                              color: AppColors.iconColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => Get.toNamed(Routes.login),
+                          ),
+                        ]),
+                      ),
                     ],
                   ),
                 ),

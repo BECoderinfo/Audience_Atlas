@@ -1,14 +1,16 @@
 import 'package:audience_atlas/modals/video_modal/video_modal.dart';
 import 'package:audience_atlas/utils/import.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
-class HomeController extends GetxController {
+class PublisherDController extends GetxController {
   BuildContext ctx = Get.context!;
+  final String publisherId;
   RxBool isLoading = false.obs;
   RxBool isLoadingMore = false.obs;
   RxList<VideoModal> videos = <VideoModal>[].obs;
   RxList<VideoModal> filteredVideos = <VideoModal>[].obs;
   int page = 1;
+
+  PublisherDController({required this.publisherId});
 
   @override
   void onInit() {
@@ -21,8 +23,8 @@ class HomeController extends GetxController {
       isLoading.value = true;
       videos.clear();
       page = 1;
-      var res = await ApiService.getApi(
-          Apis.getVideos(page: page, random: true), ctx);
+      var res =
+          await ApiService.getApi(Apis.getVideos(publisher: publisherId), ctx);
       if (res != null && res['videos'] != null) {
         List<VideoModal> newVideos = res['videos']
             .map<VideoModal>((e) => VideoModal.fromJson(e))
@@ -65,19 +67,6 @@ class HomeController extends GetxController {
       print('Error loading more videos: $e');
     } finally {
       isLoadingMore.value = false;
-    }
-  }
-
-  void searchVideos(String query) {
-    if (query.isEmpty) {
-      filteredVideos.assignAll(videos);
-    } else {
-      filteredVideos.assignAll(
-        videos
-            .where((video) =>
-                video.title.toLowerCase().contains(query.toLowerCase()))
-            .toList(),
-      );
     }
   }
 }
