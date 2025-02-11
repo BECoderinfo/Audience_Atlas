@@ -1,6 +1,9 @@
 import 'package:atlas_admin/utils/import.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  GetStorage.init();
   runApp(MyApp());
 }
 

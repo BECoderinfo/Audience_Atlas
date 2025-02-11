@@ -11,47 +11,54 @@ class Dashboard extends StatelessWidget {
       appBar: AppBar(
         title: Text('Dashboard'),
       ),
-      drawer: AdminDrawer(),
+      drawer: AdminDrawer(
+        controller: controller,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
+        child: Obx(
+          () => ShimmerLoading(
+            isLoading: controller.isLoading.value,
+            child: Column(
               children: [
-                Expanded(
-                  child: GridItemTile(
-                    title: 'Total \nVideos',
-                    value: '5',
-                    color: AppColors.iconColor,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GridItemTile(
+                        title: 'Total \nVideos',
+                        value: controller.totalVideo.value,
+                        color: AppColors.iconColor,
+                      ),
+                    ),
+                    Gap(16),
+                    Expanded(
+                      child: GridItemTile(
+                        title: 'Total \nUsers',
+                        value: controller.totalUser.value,
+                        color: AppColors.iconColor,
+                      ),
+                    ),
+                  ],
                 ),
-                Gap(16),
-                Expanded(
-                  child: GridItemTile(
-                    title: 'Total \nUsers',
-                    value: '20',
-                    color: AppColors.iconColor,
-                  ),
+                const Gap(16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GridItemTile(
+                        title: 'Total \nPublishers',
+                        value: controller.totalPublisher.value,
+                        color: AppColors.iconColor,
+                      ),
+                    ),
+                    Gap(16),
+                    Expanded(
+                      child: Container(),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const Gap(16),
-            Row(
-              children: [
-                Expanded(
-                  child: GridItemTile(
-                    title: 'Total \nPublishers',
-                    value: '2',
-                    color: AppColors.iconColor,
-                  ),
-                ),
-                Gap(16),
-                Expanded(
-                  child: Container(),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -59,7 +66,9 @@ class Dashboard extends StatelessWidget {
 }
 
 class AdminDrawer extends StatelessWidget {
-  const AdminDrawer({super.key});
+  final DashboardController controller;
+
+  const AdminDrawer({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +103,9 @@ class AdminDrawer extends StatelessWidget {
               iconColor: AppColors.red,
               titleColor: AppColors.red,
               icon: Icons.logout,
-              onTap: () {},
+              onTap: () {
+                controller.showLogoutDialog();
+              },
             ),
           ],
         ),

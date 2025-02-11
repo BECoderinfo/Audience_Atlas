@@ -1,3 +1,4 @@
+import 'package:atlas_admin/controllers/publishers/publisher_profile_controller.dart';
 import 'package:atlas_admin/utils/import.dart';
 
 class PublisherProfile extends StatelessWidget {
@@ -5,113 +6,212 @@ class PublisherProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String publisherId = Get.arguments['publisherId'];
+    ScrollController scrollController = ScrollController();
+
+    PublisherProfileController controller =
+        Get.put(PublisherProfileController(publisherId: publisherId));
+
+    // Pagination logic
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        controller.loadMoreVideos();
+      }
+    });
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Publisher Profile'),
+        title: Text(
+            (controller.role == 'Publisher') ? 'Profile' : 'Publisher Profile'),
+        actions: [
+          if (controller.role == 'Publisher')
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: "Logout",
+              onPressed: () {
+                controller.showLogoutDialog();
+              },
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundImage: NetworkImage(
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlrZqTCInyg6RfYC7Ape20o-EWP1EN_A8fOA&s',
+        child: RefreshIndicator(
+          onRefresh: () => controller.refreshData(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Obx(
+                    () => (controller.publisher.value == null)
+                        ? CircleAvatar(
+                            radius: 40,
+                            backgroundImage: NetworkImage(
+                              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlrZqTCInyg6RfYC7Ape20o-EWP1EN_A8fOA&s',
+                            ),
+                          )
+                        : CircleAvatar(
+                            radius: 40,
+                            backgroundImage: NetworkImage(
+                              '${Apis.serverAddress}/${controller.publisher.value!.image}',
+                            ),
+                          ),
                   ),
-                ),
-                const Gap(16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Publisher Name',
-                      style: TextStyle(s
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                  const Gap(16),
+                  Obx(
+                    () => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          (controller.publisher.value == null)
+                              ? 'Publisher Name'
+                              : controller.publisher.value!.name,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Gap(4),
+                        const Text('@id'),
+                        const Gap(2),
+                        Text(
+                          (controller.publisher.value == null)
+                              ? '100 subscribers ~ 5 videos'
+                              : '${controller.publisher.value!.subscribers} subscribers ~ ${controller.publisher.value!.totalVideos} videos',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(16),
+                ],
+              ),
+              const Gap(16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            AppColors.greyColor.withValues(alpha: 0.3),
+                        shadowColor: Colors.transparent,
+                      ),
+                      onPressed: () {
+                        Get.toNamed(Routes.manageVideo,
+                            arguments: {'publisherId': publisherId});
+                      },
+                      child: const Text(
+                        'Manage videos',
+                        style: TextStyle(color: AppColors.blackColor),
                       ),
                     ),
-                    const Gap(4),
-                    const Text('@id'),
-                    const Gap(2),
-                    const Text(
-                      '100 subscribers ~ 5 videos',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w300,
+                  ),
+                  if (controller.role == "Publisher") const Gap(16),
+                  if (controller.role == "Publisher")
+                    IconButton.filled(
+                      style: IconButton.styleFrom(
+                        backgroundColor:
+                            AppColors.greyColor.withValues(alpha: 0.3),
                       ),
+                      tooltip: 'Edit Profile',
+                      onPressed: () {
+                        Get.toNamed(Routes.updatePublisher, arguments: {
+                          'publisherId': publisherId,
+                          'role': controller.role,
+                          'name': controller.publisher.value!.name,
+                          'image':
+                              '${Apis.serverAddress}/${controller.publisher.value!.image}',
+                          'email': controller.publisher.value!.email
+                        });
+                      },
+                      icon: const Icon(Icons.edit_outlined,
+                          color: AppColors.blackColor),
                     ),
-                  ],
-                ),
-                const Gap(16),
-              ],
-            ),
-            const Gap(16),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          AppColors.greyColor.withValues(alpha: 0.3),
-                      shadowColor: Colors.transparent,
-                    ),
-                    onPressed: () {},
-                    child: const Text(
-                      'Manage videos',
-                      style: TextStyle(color: AppColors.blackColor),
-                    ),
-                  ),
-                ),
-                const Gap(16),
-                Tooltip(
-                  message: 'Edit Profile',
-                  child: IconButton.filled(
-                    style: IconButton.styleFrom(
-                      backgroundColor:
-                          AppColors.greyColor.withValues(alpha: 0.3),
-                    ),
-                    onPressed: () {},
-                    icon: const Icon(Icons.edit_outlined,
-                        color: AppColors.blackColor),
-                  ),
-                ),
-              ],
-            ),
-            const Gap(16),
-            Text(
-              'Videos',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+                ],
               ),
-            ),
-            Divider(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    VideoTile(
-                      title: 'Video Title',
-                      description: 'Video Description',
-                      image: 'https://picsum.photos/200',
-                      videoUrl: 'https://example.com/video',
-                    ),
-                    VideoTile(
-                      title: 'Video Title',
-                      description: 'Video Description',
-                      image: 'https://picsum.photos/200',
-                      videoUrl: 'https://example.com/video',
-                    ),
-                  ],
+              const Gap(16),
+              Text(
+                'Videos',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-          ],
+              Divider(),
+              Expanded(
+                child: Obx(
+                  () => (controller.loadingVideo.value)
+                      ? ShimmerLoading(
+                          isLoading: controller.loadingVideo.value,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                VideoTile(
+                                  title: 'Video Title',
+                                  description: 'Video Description',
+                                  image: 'https://picsum.photos/200',
+                                  videoUrl: 'https://example.com/video',
+                                ),
+                                VideoTile(
+                                  title: 'Video Title',
+                                  description: 'Video Description',
+                                  image: 'https://picsum.photos/200',
+                                  videoUrl: 'https://example.com/video',
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : controller.videos.isEmpty
+                          ? const Center(child: Text('No videos found'))
+                          : ListView.builder(
+                              itemCount: controller.videos.length +
+                                  (controller.isLoadingMore.value ? 1 : 0),
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index == controller.videos.length) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                return GestureDetector(
+                                  onTap: () {
+                                    Get.toNamed(Routes.viewVideo, arguments: {
+                                      'video':
+                                          "${Apis.serverAddress}/${controller.videos[index].video}"
+                                    });
+                                  },
+                                  child: VideoTile(
+                                    title: controller.videos[index].title,
+                                    description: "",
+                                    image:
+                                        '${Apis.serverAddress}/${controller.videos[index].thumbnail}',
+                                    videoUrl: controller.videos[index].video,
+                                  ),
+                                );
+                              },
+                            ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+      floatingActionButton: (controller.role == 'Publisher')
+          ? IconButton.filled(
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.greyColor.withValues(alpha: 0.3),
+              ),
+              tooltip: "Add Video",
+              onPressed: () {
+                Get.toNamed(Routes.publishVideo,
+                    arguments: {'publisherId': publisherId});
+              },
+              icon: const Icon(Icons.add, color: AppColors.blackColor),
+            )
+          : Container(),
     );
   }
 }
@@ -141,12 +241,17 @@ class VideoTile extends StatelessWidget {
             flex: 1,
             child: Container(
               height: 80,
-              decoration: BoxDecoration(
-                color: AppColors.iconColor,
-                borderRadius: BorderRadius.circular(12),
-                image: DecorationImage(
-                    image: NetworkImage(image), fit: BoxFit.cover),
-              ),
+              decoration: (image == "")
+                  ? BoxDecoration(
+                      color: AppColors.iconColor,
+                      borderRadius: BorderRadius.circular(12),
+                    )
+                  : BoxDecoration(
+                      color: AppColors.iconColor,
+                      borderRadius: BorderRadius.circular(12),
+                      image: DecorationImage(
+                          image: NetworkImage(image), fit: BoxFit.cover),
+                    ),
             ),
           ),
           const Gap(16),

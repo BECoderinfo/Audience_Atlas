@@ -11,83 +11,54 @@ class Dashboard extends StatelessWidget {
       appBar: AppBar(
         title: Text('Dashboard'),
       ),
-      drawer: Drawer(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 30.0),
-          child: Column(
-            children: [
-              DrawerItem(
-                title: 'Dashboard',
-                icon: Icons.dashboard_outlined,
-                onTap: () {
-                  Get.back();
-                },
-              ),
-              DrawerItem(
-                title: 'Manage Publishers',
-                icon: Icons.supervised_user_circle,
-                onTap: () {
-                  Get.toNamed(Routes.publishers);
-                },
-              ),
-              DrawerItem(
-                title: 'Profile',
-                icon: Icons.person_outline_sharp,
-                onTap: () {
-                  Get.toNamed(Routes.profile);
-                },
-              ),
-              DrawerItem(
-                title: 'Logout',
-                iconColor: AppColors.red,
-                titleColor: AppColors.red,
-                icon: Icons.logout,
-                onTap: () {},
-              ),
-            ],
-          ),
-        ),
+      drawer: AdminDrawer(
+        controller: controller,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Row(
+        child: Obx(
+          () => ShimmerLoading(
+            isLoading: controller.isLoading.value,
+            child: Column(
               children: [
-                Expanded(
-                  child: GridItemTile(
-                    title: 'Total \nVideos',
-                    value: '5',
-                    color: AppColors.iconColor,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GridItemTile(
+                        title: 'Total \nVideos',
+                        value: controller.totalVideo.value,
+                        color: AppColors.iconColor,
+                      ),
+                    ),
+                    Gap(16),
+                    Expanded(
+                      child: GridItemTile(
+                        title: 'Total \nUsers',
+                        value: controller.totalUser.value,
+                        color: AppColors.iconColor,
+                      ),
+                    ),
+                  ],
                 ),
-                Gap(16),
-                Expanded(
-                  child: GridItemTile(
-                    title: 'Total \nUsers',
-                    value: '20',
-                    color: AppColors.iconColor,
-                  ),
+                const Gap(16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GridItemTile(
+                        title: 'Total \nPublishers',
+                        value: controller.totalPublisher.value,
+                        color: AppColors.iconColor,
+                      ),
+                    ),
+                    Gap(16),
+                    Expanded(
+                      child: Container(),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const Gap(16),
-            Row(
-              children: [
-                Expanded(
-                  child: GridItemTile(
-                    title: 'Total \nPublishers',
-                    value: '2',
-                    color: AppColors.iconColor,
-                  ),
-                ),
-                Gap(16),
-                Expanded(
-                  child: Container(),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -95,11 +66,49 @@ class Dashboard extends StatelessWidget {
 }
 
 class AdminDrawer extends StatelessWidget {
-  const AdminDrawer({super.key});
+  final DashboardController controller;
+
+  const AdminDrawer({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Drawer(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 30.0),
+        child: Column(
+          children: [
+            DrawerItem(
+              title: 'Dashboard',
+              icon: Icons.dashboard_outlined,
+              onTap: () {
+                Get.back();
+              },
+            ),
+            DrawerItem(
+              title: 'Manage Publishers',
+              icon: Icons.supervised_user_circle,
+              onTap: () {
+                Get.toNamed(Routes.publishers);
+              },
+            ),
+            DrawerItem(
+              title: 'Profile',
+              icon: Icons.person_outline_sharp,
+              onTap: () {
+                Get.toNamed(Routes.profile);
+              },
+            ),
+            DrawerItem(
+              title: 'Logout',
+              iconColor: AppColors.red,
+              titleColor: AppColors.red,
+              icon: Icons.logout,
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

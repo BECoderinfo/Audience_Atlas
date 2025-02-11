@@ -6,28 +6,67 @@ class Publishers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PublishersController controller = Get.put(PublishersController());
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Publishers'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context, index) {
-            return PublisherTile(
-              publisherName: 'Publisher $index',
-              totalSubscribers: '100',
-              publisherImage:
-                  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlrZqTCInyg6RfYC7Ape20o-EWP1EN_A8fOA&s',
-              onTap: () {
-                Get.toNamed(Routes.publisherProfile);
-              },
-            );
-          },
-        ),
-      ),
+    return GetBuilder(
+      init: PublishersController(),
+      builder: (controller) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Publishers'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Obx(
+              () => (controller.isLoading.value)
+                  ? ShimmerLoading(
+                      isLoading: controller.isLoading.value,
+                      child: ListView(
+                        children: [
+                          PublisherTile(
+                            publisherName: 'Publisher',
+                            totalSubscribers: '100',
+                            publisherImage:
+                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlrZqTCInyg6RfYC7Ape20o-EWP1EN_A8fOA&s',
+                            onTap: () {},
+                          ),
+                          PublisherTile(
+                            publisherName: 'Publisher',
+                            totalSubscribers: '100',
+                            publisherImage:
+                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlrZqTCInyg6RfYC7Ape20o-EWP1EN_A8fOA&s',
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: controller.publishers.length,
+                      itemBuilder: (context, index) {
+                        final publisher = controller.publishers[index];
+                        return PublisherTile(
+                          publisherName: publisher.name,
+                          totalSubscribers: publisher.subscribers.toString(),
+                          publisherImage:
+                              '${Apis.serverAddress}/${publisher.image}',
+                          onTap: () {
+                            log(index.toString());
+                            Get.toNamed(Routes.publisherProfile,
+                                arguments: {'publisherId': publisher.id});
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ),
+          floatingActionButton: IconButton.filled(
+            style: IconButton.styleFrom(
+              backgroundColor: AppColors.greyColor.withValues(alpha: 0.3),
+            ),
+            tooltip: "Add Video",
+            onPressed: () {},
+            icon: const Icon(Icons.add, color: AppColors.blackColor),
+          ),
+        );
+      },
     );
   }
 }
