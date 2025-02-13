@@ -87,7 +87,7 @@ class SignupController extends GetxController {
       Apis.createUser,
       context,
       body: {
-        'name': userCredential.user!.displayName,
+        'name': userNameController.text,
         'email': userCredential.user!.email,
         'password': userCredential.user!.uid,
       },

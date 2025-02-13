@@ -40,10 +40,27 @@ class PublishersController extends GetxController {
     }
   }
 
-  void subscribe() {
+  void subscribe({required String publisherId}) async {
     try {
       // Call your API here
-      var res = ApiService.postApi(Apis.subscribeUnsubscribe, ctx, body: {});
+      var res = await ApiService.putApi(
+          Apis.subscribeUnsubscribe(publisherId: publisherId), ctx,
+          body: {"userId": AppVariables.box.read(StorageKeys.aId)});
+
+      if (res != null) {
+        fetchData();
+        var subList = AppVariables.box.read(StorageKeys.subList);
+
+        if (subList == null) {
+          subList = [publisherId];
+        } else if (subList.contains(publisherId)) {
+          subList.remove(publisherId);
+        } else {
+          subList.add(publisherId);
+        }
+        AppVariables.box.write(StorageKeys.subList, subList);
+      }
+      update();
     } catch (e) {
       // Handle error
       log('Error subscribing: $e');

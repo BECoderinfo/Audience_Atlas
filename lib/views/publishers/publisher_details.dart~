@@ -64,10 +64,14 @@ class PublisherD extends StatelessWidget {
                           AppColors.greyColor.withValues(alpha: 0.3),
                       shadowColor: Colors.transparent,
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      'Manage videos',
-                      style: TextStyle(color: AppColors.blackColor),
+                    onPressed: () {
+                      controller.subscribe();
+                    },
+                    child: Obx(
+                      () => Text(
+                        controller.status.value,
+                        style: TextStyle(color: AppColors.blackColor),
+                      ),
                     ),
                   ),
                 ),

@@ -157,11 +157,16 @@ class Intro extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    'Skip',
-                                    style: TextStyle(
-                                      color: AppColors.blackColor,
-                                      fontSize: 18,
+                                  GestureDetector(
+                                    onTap: () {
+                                      controller.index.value = 2;
+                                    },
+                                    child: Text(
+                                      'Skip',
+                                      style: TextStyle(
+                                        color: AppColors.blackColor,
+                                        fontSize: 18,
+                                      ),
                                     ),
                                   ),
                                   ElevatedButton(

@@ -56,7 +56,8 @@ class LoginController extends GetxController {
           );
           return;
         } else {
-          AppVariables.box.write(StorageKeys.aId, user['user']['id']);
+          log(user['user']['_id']);
+          AppVariables.box.write(StorageKeys.aId, user['user']['_id']);
           AppVariables.box.write(StorageKeys.aName, user['user']['name']);
           AppVariables.box.write(StorageKeys.aImage, user['user']['image']);
           AppVariables.box
@@ -94,8 +95,8 @@ class LoginController extends GetxController {
 
     if (response == null) {
       return null;
-    } else if (response['massage'] == "User found") {
-      return true;
+    } else if (response['message'] == "User found") {
+      return response;
     } else {
       return false;
     }

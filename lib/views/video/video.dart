@@ -14,7 +14,7 @@ class _VideoPageState extends State<VideoPage> {
   late VideoPlayerController _controller;
   String link = Get.arguments['video'];
   bool _isControlsVisible = true;
-  bool _isFullscreen = true;
+  bool _isFullscreen = false;
   bool _showLeftSeek = false;
   bool _showRightSeek = false;
   Timer? _hideTimer;
@@ -24,7 +24,9 @@ class _VideoPageState extends State<VideoPage> {
     super.initState();
     _controller = VideoPlayerController.networkUrl(Uri.parse(link))
       ..initialize().then((_) {
-        setState(() {});
+        setState(() {
+          _controller.play();
+        });
       }).catchError((error) {
         debugPrint("Video initialization failed: $error");
       });

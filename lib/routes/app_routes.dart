@@ -9,4 +9,6 @@ abstract class Routes {
   static const video = '/video';
   static const publishers = '/publishers';
   static const publisherDetails = '/publisherDetails';
+  static const profile = '/profile';
+  static const editProfile = '/editProfile';
 }

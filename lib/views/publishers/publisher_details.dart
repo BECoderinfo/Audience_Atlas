@@ -12,7 +12,7 @@ class PublisherD extends StatelessWidget {
         Get.put(PublisherDController(publisherId: publisher.id));
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Publisher Profile'),
+        title: const Text('Publisher'),
         backgroundColor: AppColors.iconColor,
       ),
       body: Padding(
@@ -64,26 +64,30 @@ class PublisherD extends StatelessWidget {
                           AppColors.greyColor.withValues(alpha: 0.3),
                       shadowColor: Colors.transparent,
                     ),
-                    onPressed: () {},
-                    child: const Text(
-                      'Subscribe',
-                      style: TextStyle(color: AppColors.blackColor),
+                    onPressed: () {
+                      controller.subscribe();
+                    },
+                    child: Obx(
+                      () => Text(
+                        controller.status.value,
+                        style: TextStyle(color: AppColors.blackColor),
+                      ),
                     ),
                   ),
                 ),
-                const Gap(16),
-                Tooltip(
-                  message: 'Edit Profile',
-                  child: IconButton.filled(
-                    style: IconButton.styleFrom(
-                      backgroundColor:
-                          AppColors.greyColor.withValues(alpha: 0.3),
-                    ),
-                    onPressed: () {},
-                    icon: const Icon(Icons.edit_outlined,
-                        color: AppColors.blackColor),
-                  ),
-                ),
+                // const Gap(16),
+                // Tooltip(
+                //   message: 'Edit Profile',
+                //   child: IconButton.filled(
+                //     style: IconButton.styleFrom(
+                //       backgroundColor:
+                //           AppColors.greyColor.withValues(alpha: 0.3),
+                //     ),
+                //     onPressed: () {},
+                //     icon: const Icon(Icons.edit_outlined,
+                //         color: AppColors.blackColor),
+                //   ),
+                // ),
               ],
             ),
             const Gap(16),

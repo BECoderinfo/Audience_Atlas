@@ -23,7 +23,7 @@ class Home extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Get.to(() => SearchScreen());
+              Get.to(() => SearchPage());
             },
             icon: const Icon(Icons.search_rounded),
           ),
@@ -35,94 +35,166 @@ class Home extends StatelessWidget {
         onRefresh: () async {
           await controller.fetchData();
         },
-        child: Obx(
-          () {
-            if (controller.isLoading.value) {
+        child: Padding(
+          padding: EdgeInsets.zero,
+          child: Obx(
+            () {
+              if (controller.isLoading.value) {
+                return ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemCount: 6, // Show 6 shimmer items for placeholder effect
+                  itemBuilder: (context, index) {
+                    return ShimmerLoading(
+                      isLoading: true,
+                      child: VideoCard(
+                        thumbnailUrl:
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoFRQjM-wM_nXMA03AGDXgJK3VeX7vtD3ctA&s',
+                        title: 'Flutter',
+                        publisherName: 'Flutter Devs',
+                        publisherImageUrl:
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1pb-qVaXaLJyJJAWV6jsx1yHQ-0iZS_PzAg&s',
+                      ),
+                    );
+                  },
+                );
+              }
+
               return ListView.builder(
+                controller: scrollController,
                 padding: EdgeInsets.zero,
-                itemCount: 6, // Show 6 shimmer items for placeholder effect
+                itemCount: controller.videos.length +
+                    (controller.isLoadingMore.value ? 1 : 0),
                 itemBuilder: (context, index) {
-                  return ShimmerLoading(
-                    isLoading: true,
-                    child: VideoCard(
-                      thumbnailUrl:
-                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoFRQjM-wM_nXMA03AGDXgJK3VeX7vtD3ctA&s',
-                      title: 'Flutter',
-                      publisherName: 'Flutter Devs',
-                      publisherImageUrl:
-                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1pb-qVaXaLJyJJAWV6jsx1yHQ-0iZS_PzAg&s',
-                    ),
+                  if (index == controller.videos.length) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final video = controller.videos[index];
+                  return VideoCard(
+                    thumbnailUrl: '${Apis.serverAddress}${video.thumbnail}',
+                    title: video.title,
+                    publisherName: video.publisher.name,
+                    publisherImageUrl:
+                        '${Apis.serverAddress}${video.publisher.image}',
+                    onTap: () {
+                      Get.toNamed(Routes.video, arguments: {
+                        'video': '${Apis.serverAddress}${video.video}'
+                      });
+                    },
                   );
                 },
               );
-            }
-
-            return ListView.builder(
-              controller: scrollController,
-              padding: EdgeInsets.zero,
-              itemCount: controller.videos.length +
-                  (controller.isLoadingMore.value ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == controller.videos.length) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final video = controller.videos[index];
-                return VideoCard(
-                  thumbnailUrl: '${Apis.serverAddress}${video.thumbnail}',
-                  title: video.title,
-                  publisherName: video.publisher.name,
-                  publisherImageUrl:
-                      '${Apis.serverAddress}${video.publisher.image}',
-                  onTap: () {
-                    Get.toNamed(Routes.video, arguments: {
-                      'video': '${Apis.serverAddress}${video.video}'
-                    });
-                  },
-                );
-              },
-            );
-          },
+            },
+          ),
         ),
       ),
     );
   }
 }
 
-class SearchScreen extends StatelessWidget {
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  final HomeController controller = Get.find<HomeController>();
   final TextEditingController searchController = TextEditingController();
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(_onSearchChanged);
+    searchController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      controller.searchVideos(searchController.text);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final HomeController controller = Get.find<HomeController>();
-
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: searchController,
-          decoration: InputDecoration(hintText: 'Search videos...'),
-          onChanged: (query) {
-            controller.searchVideos(query);
-          },
-        ),
+        title: const Text('Search Videos'),
+        backgroundColor: AppColors.iconColor,
       ),
-      body: Obx(
-        () => ListView.builder(
-          itemCount: controller.filteredVideos.length,
-          itemBuilder: (context, index) {
-            final video = controller.filteredVideos[index];
-            return VideoCard(
-              thumbnailUrl: video.thumbnail,
-              title: video.title,
-              publisherName: video.publisher.name,
-              publisherImageUrl: video.publisher.image,
-              onTap: () {
-                Get.toNamed(Routes.video, arguments: {
-                  'video': '${Apis.serverAddress}${video.video}'
-                });
-              },
-            );
-          },
-        ),
+      body: Column(
+        children: [
+          // 🔍 Search Bar inside Body
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: "Search videos...",
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: Obx(
+                  () => controller.filteredVideos.length <
+                          controller.videos.length
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            searchController.clear();
+                            controller.clearSearch();
+                          },
+                        )
+                      : const SizedBox.shrink(),
+                ),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+
+          // 📜 Search Results
+          Expanded(
+            child: Obx(() {
+              if (controller.isSearching.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (controller.filteredVideos.isEmpty) {
+                return const Center(
+                  child: Text("No videos found",
+                      style: TextStyle(fontSize: 18, color: Colors.grey)),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: controller.filteredVideos.length,
+                itemBuilder: (context, index) {
+                  final video = controller.filteredVideos[index];
+                  return VideoCard(
+                    thumbnailUrl: '${Apis.serverAddress}${video.thumbnail}',
+                    title: video.title,
+                    publisherName: video.publisher.name,
+                    publisherImageUrl:
+                        '${Apis.serverAddress}${video.publisher.image}',
+                    onTap: () {
+                      Get.toNamed(Routes.video, arguments: {
+                        'video': '${Apis.serverAddress}${video.video}'
+                      });
+                    },
+                  );
+                },
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

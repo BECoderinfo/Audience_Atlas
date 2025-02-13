@@ -30,5 +30,10 @@ class Apis {
 
   /// Publisher endpoints
   static String getPublishers = "$serverAddress/publisher";
-  static String subscribeUnsubscribe = "$serverAddress/publisher/subscribe";
+
+  static String subscribeUnsubscribe({required String publisherId}) =>
+      "$serverAddress/publisher/addSubscriber/$publisherId";
+
+  static String updateProfile({required String userId}) =>
+      "$serverAddress/user/update/$userId";
 }

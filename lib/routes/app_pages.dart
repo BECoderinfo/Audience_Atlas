@@ -1,5 +1,6 @@
 import 'package:audience_atlas/utils/import.dart';
 import 'package:audience_atlas/views/bio/bio.dart';
+import 'package:audience_atlas/views/profile/edit_profile.dart';
 
 import '../views/publishers/publisher_details.dart';
 
@@ -43,6 +44,10 @@ class AppPages {
     GetPage(
       name: Routes.publisherDetails,
       page: () => const PublisherD(),
+    ),
+    GetPage(
+      name: Routes.editProfile,
+      page: () => const EditProfile(),
     ),
   ];
 }

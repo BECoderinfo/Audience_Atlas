@@ -67,8 +67,9 @@ class Publisher {
 
   factory Publisher.fromJson(Map<String, dynamic> json) => Publisher(
         id: json["_id"],
-        image: json["image"],
-        name: json["name"],
+        image: json["image"] ??
+            'https://avatar.iran.liara.run/public/boy?username=Ash',
+        name: json["name"] ?? 'Atlas publisher',
         subscribers: json["subscribers"],
         totalVideos: json["totalVideos"],
         role: json["role"],

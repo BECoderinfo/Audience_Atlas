@@ -65,8 +65,7 @@ class Login extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 54),
                 ),
                 onPressed: () {
-                  Get.offAllNamed(Routes.navigation);
-                  AppVariables.box.write(StorageKeys.isLoggedIn, true);
+                  controller.login();
                 },
                 child: const Text('Login'),
               ),

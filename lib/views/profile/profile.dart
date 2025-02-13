@@ -20,8 +20,10 @@ class ProfilePage extends StatelessWidget {
           CircleAvatar(
             radius: 50,
             backgroundImage: NetworkImage(
-              AppVariables.box.read(StorageKeys.aImage) ??
-                  'https://avatar.iran.liara.run/public/boy?username=Ash',
+              (AppVariables.box.read(StorageKeys.aImage) != null)
+                  ? "${Apis.serverAddress}/${AppVariables.box.read(StorageKeys.aImage)}"
+                  : (AppVariables.box.read(StorageKeys.aImage) ??
+                      'https://avatar.iran.liara.run/public/boy?username=Ash'),
             ),
           ),
 
@@ -34,7 +36,7 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  AppVariables.box.read(StorageKeys.aName) ?? 'Kenil Lukhi',
+                  AppVariables.box.read(StorageKeys.aName) ?? 'User',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -43,7 +45,7 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(
                   AppVariables.box.read(StorageKeys.aEmail) ??
-                      'Kenilkenil425@gmail.com',
+                      'User425@gmail.com',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -61,6 +63,7 @@ class ProfilePage extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: () {
                 print('Edit Channel tapped');
+                Get.toNamed(Routes.editProfile);
               },
               icon: const Icon(
                 Icons.edit,

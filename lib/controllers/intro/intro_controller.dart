@@ -41,7 +41,6 @@ class IntroController extends GetxController {
       var userCredential = await _auth.signInWithCredential(credential);
 
       if (userCredential.user != null) {
-        AppVariables.box.write(StorageKeys.isLoggedIn, true);
         AppVariables.box.write(StorageKeys.aId, userCredential.user!.uid);
         AppVariables.box
             .write(StorageKeys.aName, userCredential.user!.displayName);
@@ -61,7 +60,13 @@ class IntroController extends GetxController {
 
           if (res != null) {
             AppVariables.box
-                .write(StorageKeys.aId, res['user']['id'].toString());
+                .write(StorageKeys.aId, res['user']['_id'].toString());
+
+            AppVariables.box.write(StorageKeys.aName, res['user']['name']);
+            if (res['user']['image'] != "images/null") {
+              AppVariables.box.write(StorageKeys.aImage, res['user']['image']);
+            }
+            AppVariables.box.write(StorageKeys.isLoggedIn, true);
 
             AppVariables.box
                 .write(StorageKeys.subList, res['user']['subscriptions'] ?? []);
@@ -72,6 +77,7 @@ class IntroController extends GetxController {
           if (res != null) {
             AppVariables.box
                 .write(StorageKeys.aId, res['user']['id'].toString());
+            AppVariables.box.write(StorageKeys.isLoggedIn, true);
 
             AppVariables.box.write(StorageKeys.subList, []);
           }

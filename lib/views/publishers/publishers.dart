@@ -69,7 +69,13 @@ class Publishers extends StatelessWidget {
                   onTap: () {
                     Get.toNamed(Routes.publisherDetails, arguments: publisher);
                   },
-                  onSubscribe: () {},
+                  isSubscribed: AppVariables.box
+                      .read(StorageKeys.subList)
+                      .contains(publisher.id),
+
+                  onSubscribe: () {
+                    controller.subscribe(publisherId: publisher.id);
+                  },
                 );
               },
             );
@@ -100,13 +106,13 @@ class ChannelCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: GestureDetector(
-        onTap: onTap,
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -166,7 +172,7 @@ class ChannelCard extends StatelessWidget {
                           : ElevatedButton(
                               onPressed: onSubscribe,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.iconColor,
+                                backgroundColor: AppColors.greyColor,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),

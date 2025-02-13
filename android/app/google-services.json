@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "1075654579926-vhr4chtnrmgtvimhiqq2hd44nb42ghoo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.audience.atlas.audience_atlas",
+            "certificate_hash": "af27e9c94379227541f7c3c8df82b0b7e79c2726"
+          }
+        },
+        {
           "client_id": "1075654579926-a1lk2gn5gi9o6min3kqg1qdm5dklb8av.apps.googleusercontent.com",
           "client_type": 3
         }
